@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0odo356" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:process id="P_Auftragsfreigabe" name="Auftrag freigeben" isExecutable="true">
+    <bpmn:startEvent id="SE_Auftragsfreigabe_gestartet" name="Auftragsfreigabe gestartet">
+      <bpmn:outgoing>SequenceFlow_1bzf7r5</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1bzf7r5" sourceRef="SE_Auftragsfreigabe_gestartet" targetRef="IE_Auftrag_in_Freigabe" />
+    <bpmn:userTask id="HT_Auftrag_freigeben" name=" Auftrag freigeben" camunda:formKey="Auftragsfreigabe" camunda:assignee="${FreigeberId}">
+      <bpmn:incoming>SequenceFlow_1hvz1wp</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1sgjlrg</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1sgjlrg" sourceRef="HT_Auftrag_freigeben" targetRef="XOR_Freigabe_erfolgt" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0sp0b13">
+      <bpmn:incoming>SequenceFlow_0orodzx</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_02tgv2n</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1hvz1wp</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:businessRuleTask id="RT_Freigeber_ermitteln" name="Freigeber ermitteln" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.tasks.v001.FreigabeErmittelnDelegate">
+      <bpmn:incoming>SequenceFlow_1lxfun2</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ehu7d0</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:exclusiveGateway id="XOR_Freigabe_erfolgt" name="Freigabe erfolgt?" default="SequenceFlow_1lxfun2">
+      <bpmn:incoming>SequenceFlow_1sgjlrg</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1lxfun2</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0dtmtn9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_1lxfun2" name="Ja" sourceRef="XOR_Freigabe_erfolgt" targetRef="RT_Freigeber_ermitteln" />
+    <bpmn:sequenceFlow id="SequenceFlow_02tgv2n" sourceRef="IE_Auftrag_in_weiterer_Freigabe" targetRef="ExclusiveGateway_0sp0b13" />
+    <bpmn:sequenceFlow id="SequenceFlow_0dtmtn9" name="nein" sourceRef="XOR_Freigabe_erfolgt" targetRef="EE_Auftrag_abgelehnt">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!FreigabeErfolgt}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0ehu7d0" sourceRef="RT_Freigeber_ermitteln" targetRef="XOR_Weiterer_Freigeber_erforderlich" />
+    <bpmn:exclusiveGateway id="XOR_Weiterer_Freigeber_erforderlich" name="Weiterer Freigeber erforderlich?" default="SequenceFlow_1o37ycj">
+      <bpmn:incoming>SequenceFlow_0ehu7d0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1o37ycj</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1jml5je</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_1o37ycj" name="nein" sourceRef="XOR_Weiterer_Freigeber_erforderlich" targetRef="EE_Auftrag_freigegeben" />
+    <bpmn:sequenceFlow id="SequenceFlow_1jml5je" name="Ja" sourceRef="XOR_Weiterer_Freigeber_erforderlich" targetRef="IE_Auftrag_in_weiterer_Freigabe">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${WeitereFreigabeErforderlich}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:subProcess id="ESP_ProzessBeiAuftragsablauf_Beenden" name="Prozess bei Auftragsablauf beenden" triggeredByEvent="true">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="de.fiduciagad.okvp.zahlungsauftrag.prozess.auftragsfreigabe.v1..FreigabeAblaufÜberwachungStart" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:startEvent id="SE_Timer_Auftragsablauf_erreicht" name=" Auftragsablauf erreicht">
+        <bpmn:outgoing>SequenceFlow_1ahn3pr</bpmn:outgoing>
+        <bpmn:timerEventDefinition>
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_1ahn3pr" sourceRef="SE_Timer_Auftragsablauf_erreicht" targetRef="EE_Auftrag_abgelaufen" />
+      <bpmn:endEvent id="EE_Auftrag_abgelaufen" name="Auftrag abgelaufen">
+        <bpmn:incoming>SequenceFlow_1ahn3pr</bpmn:incoming>
+        <bpmn:messageEventDefinition messageRef="Message_0h8c5dl" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.events.v001.StatusupdateDelegate" />
+      </bpmn:endEvent>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="ESP_Technischen_Fehler_behandeln" name="Technischen Fehler behandeln" triggeredByEvent="true">
+      <bpmn:startEvent id="StartEvent_1ld7jfv">
+        <bpmn:outgoing>SequenceFlow_01fhtps</bpmn:outgoing>
+        <bpmn:errorEventDefinition errorRef="Error_0thqxyh" />
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_01fhtps" sourceRef="StartEvent_1ld7jfv" targetRef="ST_Technischen_Fehler_behandeln" />
+      <bpmn:serviceTask id="ST_Technischen_Fehler_behandeln" name="Technischen Fehler behandeln" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.error.v001.ErrorHanlder">
+        <bpmn:incoming>SequenceFlow_01fhtps</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_00peszi</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="SequenceFlow_00peszi" sourceRef="ST_Technischen_Fehler_behandeln" targetRef="EE_Auftrag_fehlerhaft" />
+      <bpmn:endEvent id="EE_Auftrag_fehlerhaft" name="Auftrag fehlerhaft">
+        <bpmn:incoming>SequenceFlow_00peszi</bpmn:incoming>
+        <bpmn:messageEventDefinition messageRef="Message_0s4f27e" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.events.v001.StatusupdateDelegate" />
+      </bpmn:endEvent>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="SequenceFlow_0orodzx" sourceRef="IE_Auftrag_in_Freigabe" targetRef="ExclusiveGateway_0sp0b13" />
+    <bpmn:sequenceFlow id="SequenceFlow_1hvz1wp" sourceRef="ExclusiveGateway_0sp0b13" targetRef="HT_Auftrag_freigeben" />
+    <bpmn:endEvent id="EE_Auftrag_abgelehnt" name="Auftrag abgelehnt">
+      <bpmn:incoming>SequenceFlow_0dtmtn9</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_18p400m" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.events.v001.StatusupdateDelegate" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EE_Auftrag_freigegeben" name="Auftrag freigegeben">
+      <bpmn:incoming>SequenceFlow_1o37ycj</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_1rwcky8" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.events.v001.StatusupdateDelegate" />
+    </bpmn:endEvent>
+    <bpmn:intermediateThrowEvent id="IE_Auftrag_in_weiterer_Freigabe" name="Auftrag in weiterer Freigabe">
+      <bpmn:incoming>SequenceFlow_1jml5je</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_02tgv2n</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_0dzt139" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.events.v001.StatusupdateDelegate" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="IE_Auftrag_in_Freigabe" name="Auftrag in Freigabe">
+      <bpmn:incoming>SequenceFlow_1bzf7r5</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0orodzx</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_0y9lv59" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.events.v001.StatusupdateDelegate" />
+    </bpmn:intermediateThrowEvent>
+  </bpmn:process>
+  <bpmn:message id="Message_1rwcky8" name="Msg_Auftragstatus_Freigegeben" />
+  <bpmn:message id="Message_18p400m" name="Msg_Auftragstatus_Abgelehnt" />
+  <bpmn:message id="Message_0h8c5dl" name="Msg_Auftragsstatus_Abgelaufen" />
+  <bpmn:message id="Message_0dzt139" name="Msg_Auftragstatus_InWeitererFreigabe" />
+  <bpmn:error id="Error_0thqxyh" name="Technischer_Fehler" />
+  <bpmn:message id="Message_0s4f27e" name="Msg_Auftragstatus_Fehlerhaft" />
+  <bpmn:message id="Message_0y9lv59" name="Msg_Auftragstatus_InFreigabe" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="P_Auftragsfreigabe">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="SE_Auftragsfreigabe_gestartet">
+        <dc:Bounds x="64" y="295" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="42" y="338" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1bzf7r5_di" bpmnElement="SequenceFlow_1bzf7r5">
+        <di:waypoint x="100" y="313" />
+        <di:waypoint x="142" y="313" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0ihwqry_di" bpmnElement="HT_Auftrag_freigeben">
+        <dc:Bounds x="302" y="273" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1sgjlrg_di" bpmnElement="SequenceFlow_1sgjlrg">
+        <di:waypoint x="402" y="313" />
+        <di:waypoint x="444" y="313" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0sp0b13_di" bpmnElement="ExclusiveGateway_0sp0b13" isMarkerVisible="true">
+        <dc:Bounds x="216" y="288" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BusinessRuleTask_0wescje_di" bpmnElement="RT_Freigeber_ermitteln">
+        <dc:Bounds x="554" y="273" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1uw23j8_di" bpmnElement="XOR_Freigabe_erfolgt" isMarkerVisible="true">
+        <dc:Bounds x="444" y="288" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="427" y="347" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1lxfun2_di" bpmnElement="SequenceFlow_1lxfun2">
+        <di:waypoint x="494" y="313" />
+        <di:waypoint x="554" y="313" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="497" y="294" width="12" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_02tgv2n_di" bpmnElement="SequenceFlow_02tgv2n">
+        <di:waypoint x="596" y="414" />
+        <di:waypoint x="241" y="414" />
+        <di:waypoint x="241" y="338" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0dtmtn9_di" bpmnElement="SequenceFlow_0dtmtn9">
+        <di:waypoint x="469" y="288" />
+        <di:waypoint x="469" y="208" />
+        <di:waypoint x="802" y="208" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="439" y="266" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ehu7d0_di" bpmnElement="SequenceFlow_0ehu7d0">
+        <di:waypoint x="654" y="313" />
+        <di:waypoint x="698" y="313" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1036e38_di" bpmnElement="XOR_Weiterer_Freigeber_erforderlich" isMarkerVisible="true">
+        <dc:Bounds x="698" y="288" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="692" y="235" width="62" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1o37ycj_di" bpmnElement="SequenceFlow_1o37ycj">
+        <di:waypoint x="748" y="313" />
+        <di:waypoint x="802" y="313" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="764" y="295" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1jml5je_di" bpmnElement="SequenceFlow_1jml5je">
+        <di:waypoint x="723" y="338" />
+        <di:waypoint x="723" y="414" />
+        <di:waypoint x="632" y="414" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="685" y="373" width="12" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SubProcess_02mrvre_di" bpmnElement="ESP_ProzessBeiAuftragsablauf_Beenden" isExpanded="true">
+        <dc:Bounds x="90" y="481" width="323" height="199" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0hc7ivr_di" bpmnElement="SE_Timer_Auftragsablauf_erreicht">
+        <dc:Bounds x="117" y="564" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="91" y="607" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ahn3pr_di" bpmnElement="SequenceFlow_1ahn3pr">
+        <di:waypoint x="153" y="582" />
+        <di:waypoint x="342" y="582" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SubProcess_0udwnxw_di" bpmnElement="ESP_Technischen_Fehler_behandeln" isExpanded="true">
+        <dc:Bounds x="427" y="480" width="332" height="199" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1ofjopx_di" bpmnElement="StartEvent_1ld7jfv">
+        <dc:Bounds x="452" y="558" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_01fhtps_di" bpmnElement="SequenceFlow_01fhtps">
+        <di:waypoint x="488" y="576" />
+        <di:waypoint x="543" y="576" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_05t5vzn_di" bpmnElement="ST_Technischen_Fehler_behandeln">
+        <dc:Bounds x="543" y="536" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_00peszi_di" bpmnElement="SequenceFlow_00peszi">
+        <di:waypoint x="643" y="576" />
+        <di:waypoint x="687" y="576" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0orodzx_di" bpmnElement="SequenceFlow_0orodzx">
+        <di:waypoint x="178" y="313" />
+        <di:waypoint x="216" y="313" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1hvz1wp_di" bpmnElement="SequenceFlow_1hvz1wp">
+        <di:waypoint x="266" y="313" />
+        <di:waypoint x="302" y="313" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0f5ud1k_di" bpmnElement="EE_Auftrag_abgelehnt">
+        <dc:Bounds x="802" y="190" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="777" y="233" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1k1jzf0_di" bpmnElement="EE_Auftrag_freigegeben">
+        <dc:Bounds x="802" y="295" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="791" y="338" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0va0q7j_di" bpmnElement="EE_Auftrag_fehlerhaft">
+        <dc:Bounds x="687" y="558" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="663" y="601" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IntermediateThrowEvent_02n7zaw_di" bpmnElement="IE_Auftrag_in_weiterer_Freigabe">
+        <dc:Bounds x="596" y="396" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="572" y="439" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IntermediateThrowEvent_07p596b_di" bpmnElement="IE_Auftrag_in_Freigabe">
+        <dc:Bounds x="142" y="295" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="137" y="338" width="47" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0najgce_di" bpmnElement="EE_Auftrag_abgelaufen">
+        <dc:Bounds x="342" y="564" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="332" y="607" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

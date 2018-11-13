@@ -1,0 +1,47 @@
+  spring:
+    application:
+      name: de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.v001
+    
+  management:
+    server:
+      servlet:
+        context-path: /admin
+    security:
+      enabled: false  
+        
+  server:
+    tomcat:
+      basedir: /var/log/tomcat
+      accesslog:
+        enabled: true
+        pattern: '%t %I %a "%r" %s (%D ms)'
+    address: localhost
+    port: 8091
+  
+  datasource:
+    url: jdbc:h2:file:./camunda-db;DB_CLOSE_DELAY=-1;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
+    driverClassName: org.h2.Driver
+    username: sa
+    password: sa
+    history-level: full
+    
+# Don't use the default /rest path for camunda, the spin framework uses /rest too which leads to
+# incombatible REST service URLs
+  jersey:
+    application-path: /camunda-rest
+        
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  camunda.bpm:
+    database:
+      schema-update: true
+    admin-user:
+      id: kermit
+      password: superSecret
+      firstName: Kermit
+    filter:
+      create: All tasks
+      

@@ -1,0 +1,18 @@
+Events richtig über Eventsmechanismen verschicken.
+T
+askWorker weiter verfolgen (wenn nicht der Nachteil, dass man die ganze Rest-API exposen muss.
+Sonst: Beans weiter verfolgen.
+
+Auftrags-Spring-Service aufrufen
+
+DMMN-Handling anschauen
+
+Maske anbinden
+
+Aktuelle "Fakes": Feste UserIds/Berechtigungen:
+user xcm4444 -> xcm5555 -> xcm6666->fertig
+alle anderen -> fertig
+
+Status aktuell gem. Namen der Events in Modellierung genommen, kein EM dafür.
+
+Auftrag (aktuell nur einer, da der MS noch nicht existiert)
