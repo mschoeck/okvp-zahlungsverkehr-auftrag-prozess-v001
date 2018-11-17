@@ -11,8 +11,10 @@ import javax.persistence.Id;
 public class Zahlungsauftrag implements Serializable {
 
 	private static final long serialVersionUID = -2147791132878672179L;
+	
 	@Id
 	private Long id;
+	
 	private String art;
 
 	private String empfaengerName;
@@ -31,7 +33,9 @@ public class Zahlungsauftrag implements Serializable {
 
 	private String erfasser;
 	private String status;
+	
 	private String prozessId;
+	
 	public Long getId() {
 		return id;
 	}

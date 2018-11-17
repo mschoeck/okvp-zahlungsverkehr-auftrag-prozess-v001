@@ -1,28 +1,27 @@
-package de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.tasks.v001;
+package de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.variable.Variables;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
-import de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.delegates.v001.Prozesssauftrag;
-import de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.delegates.v001.DelegateAuftragskompetenz;
-import de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.v001.ProzessVariablen;
+import de.fiduciagad.okvp.zahlungsverkehr.auftrag.kompetenz.AuftragsKompetenzHandler;
 
-public class FreigabeErmittelnDelegate implements JavaDelegate{
-
-	private final static Logger LOGGER = Logger.getLogger(FreigabeErmittelnDelegate.class.getName());
+@Controller
+public class DelegateFreigabeErmitteln implements JavaDelegate{
+	@Autowired
+	private AuftragsKompetenzHandler kompetenzhandler;
 	
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
-		LOGGER.info("execute gerufen für: " + execution.getId());
 		DelegateExecution processExecution = execution.getProcessInstance();
-		processExecution.getVariables().entrySet().stream().forEach(entry -> LOGGER.info(entry.toString()));
 		
 		ArrayList<String> listVorhandeneFreigaben = (ArrayList<String>) processExecution.getVariable(ProzessVariablen.STR_FREIGEBER_LISTE);
-		String naechsterFreigeber = DelegateAuftragskompetenz.getDelegateKompetez().gibNächstenFreigeber(new Prozesssauftrag(), listVorhandeneFreigaben);
+		String defaultFreigeber = (String) processExecution.getVariable(ProzessVariablen.STR_AUFTRAGSERFASSERID);
+		String naechsterFreigeber = kompetenzhandler.gibNächstenFreigeber(defaultFreigeber, listVorhandeneFreigaben);
 		
 		if (naechsterFreigeber != null) {
 			variablenFuerNeueFreigabeZuruecksetzen(processExecution, naechsterFreigeber);
@@ -31,7 +30,7 @@ public class FreigabeErmittelnDelegate implements JavaDelegate{
 			processExecution.setVariable(ProzessVariablen.FLG_WEITERE_FREIGABE_ERFORDERLICH, Variables.booleanValue(false));
 		}
 	}
-
+	
 	private void variablenFuerNeueFreigabeZuruecksetzen(DelegateExecution processExecution, String freigeberId) {
 		processExecution.setVariable(ProzessVariablen.STR_FREIGEBER_ID, Variables.stringValue(freigeberId));
 		processExecution.setVariable(ProzessVariablen.FLG_FREIGABE_ERFOLGT, Variables.booleanValue(false));

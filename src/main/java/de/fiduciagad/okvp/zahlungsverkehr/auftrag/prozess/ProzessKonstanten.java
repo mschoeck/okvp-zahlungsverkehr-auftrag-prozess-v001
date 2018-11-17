@@ -1,4 +1,4 @@
-package de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.v001;
+package de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess;
 
 /**
  * Konstanten des Freigabeprozesses.
@@ -18,10 +18,19 @@ public interface ProzessKonstanten {
 	public static final String MESSAGE_AUFTRAGSTATUS_IN_WEITERER_FREIGABE = "Msg_Auftragstatus_InWeitererFreigabe";
 	public static final String MESSAGE_AUFTRAGSTATUS_ABGElAUFEN= "Msg_Auftragsstatus_Abgelaufen";
 	public static final String MESSAGE_AUFTRAGSTATUS_FEHLERHAFT= "Msg_Auftragstatus_Fehlerhaft";
+
+	/* Konstanten */
+	public static final String AUFTRAGSTATUS_OFFEN = "Erfasst";
+	public static final String AUFTRAGSTATUS_FREIGEGEBEN = "Freigegeben";
+	public static final String AUFTRAGSTATUS_ABGELEHNT = "Freigabe abgelehnt";
+	public static final String AUFTRAGSTATUS_IN_FREIGABE ="Erste Freigabe gestartet";
+	public static final String AUFTRAGSTATUS_IN_WEITERER_FREIGABE = "Freigabe angefordert";
+	public static final String AUFTRAGSTATUS_ABGElAUFEN= "Freigabefrist abgelaufen";
+	public static final String AUFTRAGSTATUS_FEHLERHAFT= "Fehler aufgetreten";	
+	
 	
 	/* Topics, die im Prozess für Serviceaufrufe hinterlegt sind */
     public static final String TOPIC_FREIGEBER_ERMITTELN = "cmdFreigeberErmitteln";
 		
-	/* Form Keys */
 	public static final String FORM_AUFTRAGSFREIGABE = "Auftragsfreigabe";
 }

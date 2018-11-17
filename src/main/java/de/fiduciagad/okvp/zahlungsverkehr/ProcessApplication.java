@@ -78,7 +78,7 @@ public class ProcessApplication {
 			z2.setEmpfaengerInstitut("Raiffeisenbank");
 			z2.setEmpfaengerIBAN("DE43 1000 2000 3000 4000 500");
 			z2.setEmpfaengerBIC("VRBXYZNXQ");
-			z2.setBetrag(BigDecimal.valueOf(15.00));
+			z2.setBetrag(BigDecimal.valueOf(515.00));
 			z2.setVerwendung("Auftragnr. 124881");
 			z2.setSofertausfuehren(false);
 			z2.setAusfuehrenZum(LocalDate.of(2018, 12, 6));
@@ -104,7 +104,7 @@ public class ProcessApplication {
 			z3.setSenderKontoart("Girokonto");
 			z3.setSenderIBAN("DE43 1000 2000 3000 4444 555");
 			z3.setSenderBIC("VRBXBXZZ");
-			z3.setErfasser("ycm5555");
+			z3.setErfasser("ycm4444");
 			z3.setStatus("Erfasst");
 			z3.setProzessId(null);
 			auftraege.add(z3);
@@ -123,7 +123,7 @@ public class ProcessApplication {
 			z4.setSenderKontoart("Girokonto");
 			z4.setSenderIBAN("'DE43 6767 7676 6767 7676 676");
 			z4.setSenderBIC("VRBXBXZZ");
-			z4.setErfasser("ycm6666");
+			z4.setErfasser("ycm5555");
 			z4.setStatus("Erfasst");
 			z4.setProzessId(null);
 			auftraege.add(z4);
