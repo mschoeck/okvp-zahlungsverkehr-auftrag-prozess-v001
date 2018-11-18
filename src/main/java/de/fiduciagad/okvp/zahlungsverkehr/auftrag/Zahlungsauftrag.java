@@ -33,6 +33,7 @@ public class Zahlungsauftrag implements Serializable {
 
 	private String erfasser;
 	private String status;
+	private String aktuellerFreigeber;
 	
 	private String prozessId;
 	
@@ -131,6 +132,12 @@ public class Zahlungsauftrag implements Serializable {
 	}
 	public void setProzessId(String prozessId) {
 		this.prozessId = prozessId;
+	}
+	public String getAktuellerFreigeber() {
+		return aktuellerFreigeber;
+	}
+	public void setAktuellerFreigeber(String aktuellerFreigeber) {
+		this.aktuellerFreigeber = aktuellerFreigeber;
 	}
 
 }

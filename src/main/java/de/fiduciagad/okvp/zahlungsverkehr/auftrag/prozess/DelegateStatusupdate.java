@@ -24,12 +24,15 @@ public class DelegateStatusupdate implements JavaDelegate{
 		
 		RuntimeService runtimeService = execution.getProcessEngineServices().getRuntimeService();
 		runtimeService.setVariable(execution.getProcessInstanceId(), ProzessVariablen.STR_LETZTER_AUFTRAGSSTATUS, Variables.stringValue(eventName));
-		Long auftragid = (Long) runtimeService.getVariable(execution.getProcessInstanceId(), ProzessVariablen.LON_AUFTRAGSID);
 
+		Long auftragid = (Long) runtimeService.getVariable(execution.getProcessInstanceId(), ProzessVariablen.LON_AUFTRAGSID);
+		String aktuellerFreigeber = (String)runtimeService.getVariable(execution.getProcessInstanceId(), ProzessVariablen.STR_FREIGEBER_ID);
 		Optional<Zahlungsauftrag> auftrag = repository.findById(auftragid);
 		if (auftrag.isPresent())
 		{
 			auftrag.get().setStatus(eventName);
+			auftrag.get().setAktuellerFreigeber(aktuellerFreigeber);
+			repository.save(auftrag.get());
 		}
 	}
 }

@@ -224,7 +224,10 @@ public class ZahlungsauftraegeController {
 		// starte den Freigabeprozess
 		ProcessInstance freigabeProzess = runtimeService.startProcessInstanceByKey(ProzessKonstanten.KEY_PROZESS_AUFTRAGSFREIGABE, variables); 
         String freigabeProzessId = freigabeProzess.getProcessInstanceId();
+        
+        // update Auftrag
 		auftrag.setProzessId(freigabeProzessId);
+		repository.save(auftrag);
         
         return freigabeProzessId;
 	 }
