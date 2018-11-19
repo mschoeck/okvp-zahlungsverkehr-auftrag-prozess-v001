@@ -1,5 +1,6 @@
 package de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -19,9 +20,13 @@ public class DelegateFreigabeErmitteln implements JavaDelegate{
 	public void execute(DelegateExecution execution) throws Exception {
 		DelegateExecution processExecution = execution.getProcessInstance();
 		
-		ArrayList<String> listVorhandeneFreigaben = (ArrayList<String>) processExecution.getVariable(ProzessVariablen.STR_FREIGEBER_LISTE);
 		String defaultFreigeber = (String) processExecution.getVariable(ProzessVariablen.STR_AUFTRAGSERFASSERID);
-		String naechsterFreigeber = kompetenzhandler.gibNächstenFreigeber(defaultFreigeber, listVorhandeneFreigaben);
+		ArrayList<String> listVorhandeneFreigaben = (ArrayList<String>) processExecution.getVariable(ProzessVariablen.STR_FREIGEBER_LISTE);
+		if (!listVorhandeneFreigaben.isEmpty())
+			defaultFreigeber = listVorhandeneFreigaben.get(listVorhandeneFreigaben.size()-1);
+		
+		BigDecimal betrag = BigDecimal.valueOf((Double) processExecution.getVariable(ProzessVariablen.DBL_BETRAG));
+		String naechsterFreigeber = kompetenzhandler.gibNaechstenFreigeber(defaultFreigeber, listVorhandeneFreigaben, betrag);
 		
 		if (naechsterFreigeber != null) {
 			variablenFuerNeueFreigabeZuruecksetzen(processExecution, naechsterFreigeber);

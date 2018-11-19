@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -22,11 +21,9 @@ import de.fiduciagad.okvp.zahlungsverkehr.auftrag.ZahlungsauftragRepository;
 @SpringBootApplication()
 
 public class ProcessApplication {
-	private final static Logger LOGGER = Logger.getLogger(ProcessApplication.class.getName());
 
 	public static void main(String... args) {
 		SpringApplication.run(ProcessApplication.class, args);
-		LOGGER.info("Application " + ProcessApplication.class.getName() + " läuft");
 	}
 
 	@Bean
@@ -140,7 +137,7 @@ public class ProcessApplication {
 			z5.setEmpfaengerIBAN("DE43 4242 0000 4242 0000");
 			z5.setEmpfaengerBIC("DBXYZXYZ");
 			z5.setBetrag(BigDecimal.valueOf(50.00));
-			z5.setVerwendung("ehalt 1118");
+			z5.setVerwendung("Gehalt 1118");
 			z5.setSofertausfuehren(true);
 			z5.setAusfuehrenZum(LocalDate.of(2018, 4, 23));
 			z5.setSenderKontoart("Girokonto");
@@ -151,6 +148,26 @@ public class ProcessApplication {
 			z5.setProzessId(null);
 			z5.setAktuellerFreigeber(null);
 			auftraege.add(z5);
+			
+			Zahlungsauftrag z6 = new Zahlungsauftrag();
+			z6.setId(16L);
+			z6.setArt("Terminüberweisung");
+			z6.setEmpfaengerName("Finanzamt München");
+			z6.setEmpfaengerInstitut("Deutsche Bank");
+			z6.setEmpfaengerIBAN("DE43 3333 0000 4444 0000");
+			z6.setEmpfaengerBIC("DBXYZXYZ");
+			z6.setBetrag(BigDecimal.valueOf(15550.00));
+			z6.setVerwendung("Steuer 2017");
+			z6.setSofertausfuehren(true);
+			z6.setAusfuehrenZum(LocalDate.of(2018, 12, 23));
+			z6.setSenderKontoart("Girokonto");
+			z6.setSenderIBAN("'DE43 6767 7676 6767 7676");
+			z6.setSenderBIC("VRBXBXZZ");
+			z6.setErfasser("ycm6666");
+			z6.setStatus("Erfasst");
+			z6.setProzessId(null);
+			z6.setAktuellerFreigeber(null);
+			auftraege.add(z6);
 			
 			repository.saveAll(auftraege);
 

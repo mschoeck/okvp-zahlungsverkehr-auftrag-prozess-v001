@@ -39,38 +39,6 @@
     <bpmn:sequenceFlow id="SequenceFlow_1jml5je" name="Ja" sourceRef="XOR_Weiterer_Freigeber_erforderlich" targetRef="IE_Auftrag_in_weiterer_Freigabe">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${WeitereFreigabeErforderlich}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:subProcess id="ESP_ProzessBeiAuftragsablauf_Beenden" name="Prozess bei Auftragsablauf beenden" triggeredByEvent="true">
-      <bpmn:extensionElements>
-        <camunda:executionListener class="de.fiduciagad.okvp.zahlungsauftrag.prozess.auftragsfreigabe.v1..FreigabeAblaufÜberwachungStart" event="start" />
-      </bpmn:extensionElements>
-      <bpmn:startEvent id="SE_Timer_Auftragsablauf_erreicht" name=" Auftragsablauf erreicht">
-        <bpmn:outgoing>SequenceFlow_1ahn3pr</bpmn:outgoing>
-        <bpmn:timerEventDefinition>
-          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
-        </bpmn:timerEventDefinition>
-      </bpmn:startEvent>
-      <bpmn:sequenceFlow id="SequenceFlow_1ahn3pr" sourceRef="SE_Timer_Auftragsablauf_erreicht" targetRef="EE_Auftrag_abgelaufen" />
-      <bpmn:endEvent id="EE_Auftrag_abgelaufen" name="Freigabefrist abgelaufen">
-        <bpmn:incoming>SequenceFlow_1ahn3pr</bpmn:incoming>
-        <bpmn:messageEventDefinition messageRef="Message_0h8c5dl" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.DelegateStatusupdate" />
-      </bpmn:endEvent>
-    </bpmn:subProcess>
-    <bpmn:subProcess id="ESP_Technischen_Fehler_behandeln" name="Technischen Fehler behandeln" triggeredByEvent="true">
-      <bpmn:startEvent id="StartEvent_1ld7jfv">
-        <bpmn:outgoing>SequenceFlow_01fhtps</bpmn:outgoing>
-        <bpmn:errorEventDefinition errorRef="Error_0thqxyh" />
-      </bpmn:startEvent>
-      <bpmn:sequenceFlow id="SequenceFlow_01fhtps" sourceRef="StartEvent_1ld7jfv" targetRef="ST_Technischen_Fehler_behandeln" />
-      <bpmn:serviceTask id="ST_Technischen_Fehler_behandeln" name="Technischen Fehler behandeln" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.DelegateErrorHandler">
-        <bpmn:incoming>SequenceFlow_01fhtps</bpmn:incoming>
-        <bpmn:outgoing>SequenceFlow_00peszi</bpmn:outgoing>
-      </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="SequenceFlow_00peszi" sourceRef="ST_Technischen_Fehler_behandeln" targetRef="EE_Auftrag_fehlerhaft" />
-      <bpmn:endEvent id="EE_Auftrag_fehlerhaft" name="Fehler aufgetreten">
-        <bpmn:incoming>SequenceFlow_00peszi</bpmn:incoming>
-        <bpmn:messageEventDefinition messageRef="Message_0s4f27e" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.DelegateStatusupdate" />
-      </bpmn:endEvent>
-    </bpmn:subProcess>
     <bpmn:sequenceFlow id="SequenceFlow_0orodzx" sourceRef="IE_Auftrag_in_Freigabe" targetRef="ExclusiveGateway_0sp0b13" />
     <bpmn:sequenceFlow id="SequenceFlow_1hvz1wp" sourceRef="ExclusiveGateway_0sp0b13" targetRef="HT_Auftrag_freigeben" />
     <bpmn:endEvent id="EE_Auftrag_abgelehnt" name="Freigabe abgelehnt">
@@ -145,7 +113,7 @@
       <bpmndi:BPMNEdge id="SequenceFlow_0dtmtn9_di" bpmnElement="SequenceFlow_0dtmtn9">
         <di:waypoint x="469" y="288" />
         <di:waypoint x="469" y="208" />
-        <di:waypoint x="802" y="208" />
+        <di:waypoint x="829" y="208" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="439" y="266" width="22" height="14" />
         </bpmndi:BPMNLabel>
@@ -162,9 +130,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1o37ycj_di" bpmnElement="SequenceFlow_1o37ycj">
         <di:waypoint x="748" y="313" />
-        <di:waypoint x="802" y="313" />
+        <di:waypoint x="829" y="313" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="764" y="295" width="22" height="14" />
+          <dc:Bounds x="746" y="291" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1jml5je_di" bpmnElement="SequenceFlow_1jml5je">
@@ -175,36 +143,6 @@
           <dc:Bounds x="685" y="373" width="12" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SubProcess_02mrvre_di" bpmnElement="ESP_ProzessBeiAuftragsablauf_Beenden" isExpanded="true">
-        <dc:Bounds x="90" y="481" width="323" height="199" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="StartEvent_0hc7ivr_di" bpmnElement="SE_Timer_Auftragsablauf_erreicht">
-        <dc:Bounds x="117" y="564" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="91" y="607" width="88" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1ahn3pr_di" bpmnElement="SequenceFlow_1ahn3pr">
-        <di:waypoint x="153" y="582" />
-        <di:waypoint x="342" y="582" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SubProcess_0udwnxw_di" bpmnElement="ESP_Technischen_Fehler_behandeln" isExpanded="true">
-        <dc:Bounds x="427" y="480" width="332" height="199" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="StartEvent_1ofjopx_di" bpmnElement="StartEvent_1ld7jfv">
-        <dc:Bounds x="452" y="558" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_01fhtps_di" bpmnElement="SequenceFlow_01fhtps">
-        <di:waypoint x="488" y="576" />
-        <di:waypoint x="543" y="576" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_05t5vzn_di" bpmnElement="ST_Technischen_Fehler_behandeln">
-        <dc:Bounds x="543" y="536" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_00peszi_di" bpmnElement="SequenceFlow_00peszi">
-        <di:waypoint x="643" y="576" />
-        <di:waypoint x="687" y="576" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0orodzx_di" bpmnElement="SequenceFlow_0orodzx">
         <di:waypoint x="178" y="313" />
         <di:waypoint x="216" y="313" />
@@ -214,21 +152,15 @@
         <di:waypoint x="302" y="313" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0f5ud1k_di" bpmnElement="EE_Auftrag_abgelehnt">
-        <dc:Bounds x="802" y="190" width="36" height="36" />
+        <dc:Bounds x="829" y="190" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="796" y="233" width="50" height="27" />
+          <dc:Bounds x="823" y="233" width="50" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1k1jzf0_di" bpmnElement="EE_Auftrag_freigegeben">
-        <dc:Bounds x="802" y="295" width="36" height="36" />
+        <dc:Bounds x="829" y="295" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="789" y="338" width="63" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_0va0q7j_di" bpmnElement="EE_Auftrag_fehlerhaft">
-        <dc:Bounds x="687" y="558" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="678" y="601" width="56" height="27" />
+          <dc:Bounds x="816" y="338" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IntermediateThrowEvent_02n7zaw_di" bpmnElement="IE_Auftrag_in_weiterer_Freigabe">
@@ -241,12 +173,6 @@
         <dc:Bounds x="142" y="295" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="124" y="338" width="73" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_0najgce_di" bpmnElement="EE_Auftrag_abgelaufen">
-        <dc:Bounds x="342" y="564" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="328" y="607" width="63" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
