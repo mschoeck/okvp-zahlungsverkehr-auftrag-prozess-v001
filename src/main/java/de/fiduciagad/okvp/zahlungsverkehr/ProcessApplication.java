@@ -63,7 +63,7 @@ public class ProcessApplication {
 			z1.setSenderKontoart("Girokonto");
 			z1.setSenderIBAN("DE43 1000 2000 3000 4444");
 			z1.setSenderBIC("VRBXBXZZ");
-			z1.setErfasser("ycm4444");
+			z1.setErfasser("gk4444");
 			z1.setStatus("Erfasst");
 			z1.setProzessId(null);
 			z1.setAktuellerFreigeber(null);
@@ -83,7 +83,7 @@ public class ProcessApplication {
 			z2.setSenderKontoart("Girokonto");
 			z2.setSenderIBAN("DE43 1000 2000 3000 4444");
 			z2.setSenderBIC("VRBXBXZZ");
-			z2.setErfasser("ycm4444");
+			z2.setErfasser("gk4444");
 			z2.setStatus("Erfasst");
 			z2.setProzessId(null);
 			z2.setAktuellerFreigeber(null);
@@ -103,7 +103,7 @@ public class ProcessApplication {
 			z3.setSenderKontoart("Girokonto");
 			z3.setSenderIBAN("DE43 1000 2000 3000 4444");
 			z3.setSenderBIC("VRBXBXZZ");
-			z3.setErfasser("ycm4444");
+			z3.setErfasser("gk4444");
 			z3.setStatus("Erfasst");
 			z3.setProzessId(null);
 			z3.setAktuellerFreigeber(null);
@@ -123,7 +123,7 @@ public class ProcessApplication {
 			z4.setSenderKontoart("Girokonto");
 			z4.setSenderIBAN("'DE43 6767 7676 6767 7676");
 			z4.setSenderBIC("VRBXBXZZ");
-			z4.setErfasser("ycm5555");
+			z4.setErfasser("gk5555");
 			z4.setStatus("Erfasst");
 			z4.setProzessId(null);
 			z4.setAktuellerFreigeber(null);
@@ -143,7 +143,7 @@ public class ProcessApplication {
 			z5.setSenderKontoart("Girokonto");
 			z5.setSenderIBAN("'DE43 6767 7676 6767 7676");
 			z5.setSenderBIC("VRBXBXZZ");
-			z5.setErfasser("ycm6666");
+			z5.setErfasser("ek6666");
 			z5.setStatus("Erfasst");
 			z5.setProzessId(null);
 			z5.setAktuellerFreigeber(null);
@@ -163,7 +163,7 @@ public class ProcessApplication {
 			z6.setSenderKontoart("Girokonto");
 			z6.setSenderIBAN("'DE43 6767 7676 6767 7676");
 			z6.setSenderBIC("VRBXBXZZ");
-			z6.setErfasser("ycm6666");
+			z6.setErfasser("ek6666");
 			z6.setStatus("Erfasst");
 			z6.setProzessId(null);
 			z6.setAktuellerFreigeber(null);

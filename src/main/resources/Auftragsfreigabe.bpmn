@@ -5,27 +5,23 @@
       <bpmn:outgoing>SequenceFlow_1bzf7r5</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1bzf7r5" sourceRef="SE_Auftragsfreigabe_gestartet" targetRef="IE_Auftrag_in_Freigabe" />
-    <bpmn:userTask id="HT_Auftrag_freigeben" name=" Auftrag freigeben" camunda:formKey="Auftragsfreigabe" camunda:assignee="${FreigeberId}">
-      <bpmn:incoming>SequenceFlow_1hvz1wp</bpmn:incoming>
+    <bpmn:userTask id="HT_Auftrag_freigeben" name=" Auftragsfreigabe anfordern" camunda:formKey="Auftragsfreigabe" camunda:assignee="${FreigeberId}">
+      <bpmn:incoming>SequenceFlow_0orodzx</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1sgjlrg</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_1sgjlrg" sourceRef="HT_Auftrag_freigeben" targetRef="XOR_Freigabe_erfolgt" />
-    <bpmn:exclusiveGateway id="ExclusiveGateway_0sp0b13">
-      <bpmn:incoming>SequenceFlow_0orodzx</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_02tgv2n</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1hvz1wp</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
     <bpmn:businessRuleTask id="RT_Freigeber_ermitteln" name="Freigeber ermitteln" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.DelegateFreigabeErmitteln">
       <bpmn:incoming>SequenceFlow_1lxfun2</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ehu7d0</bpmn:outgoing>
     </bpmn:businessRuleTask>
     <bpmn:exclusiveGateway id="XOR_Freigabe_erfolgt" name="Freigabe erfolgt?" default="SequenceFlow_1lxfun2">
       <bpmn:incoming>SequenceFlow_1sgjlrg</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_07kw475</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1lxfun2</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0dtmtn9</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_1lxfun2" name="Ja" sourceRef="XOR_Freigabe_erfolgt" targetRef="RT_Freigeber_ermitteln" />
-    <bpmn:sequenceFlow id="SequenceFlow_02tgv2n" sourceRef="IE_Auftrag_in_weiterer_Freigabe" targetRef="ExclusiveGateway_0sp0b13" />
+    <bpmn:sequenceFlow id="SequenceFlow_02tgv2n" sourceRef="IE_Auftrag_in_weiterer_Freigabe" targetRef="UserTask_0xylj76" />
     <bpmn:sequenceFlow id="SequenceFlow_0dtmtn9" name="nein" sourceRef="XOR_Freigabe_erfolgt" targetRef="EE_Auftrag_abgelehnt">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!FreigabeErfolgt}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -39,8 +35,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1jml5je" name="Ja" sourceRef="XOR_Weiterer_Freigeber_erforderlich" targetRef="IE_Auftrag_in_weiterer_Freigabe">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${WeitereFreigabeErforderlich}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0orodzx" sourceRef="IE_Auftrag_in_Freigabe" targetRef="ExclusiveGateway_0sp0b13" />
-    <bpmn:sequenceFlow id="SequenceFlow_1hvz1wp" sourceRef="ExclusiveGateway_0sp0b13" targetRef="HT_Auftrag_freigeben" />
+    <bpmn:sequenceFlow id="SequenceFlow_0orodzx" sourceRef="IE_Auftrag_in_Freigabe" targetRef="HT_Auftrag_freigeben" />
     <bpmn:endEvent id="EE_Auftrag_abgelehnt" name="Freigabe abgelehnt">
       <bpmn:incoming>SequenceFlow_0dtmtn9</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_18p400m" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.DelegateStatusupdate" />
@@ -59,6 +54,11 @@
       <bpmn:outgoing>SequenceFlow_0orodzx</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_0y9lv59" camunda:class="de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.DelegateStatusupdate" />
     </bpmn:intermediateThrowEvent>
+    <bpmn:userTask id="UserTask_0xylj76" name=" Auftrag freigeben" camunda:formKey="Auftragsfreigabe" camunda:assignee="${FreigeberId}">
+      <bpmn:incoming>SequenceFlow_02tgv2n</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_07kw475</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_07kw475" sourceRef="UserTask_0xylj76" targetRef="XOR_Freigabe_erfolgt" />
   </bpmn:process>
   <bpmn:message id="Message_1rwcky8" name="Msg_Auftragstatus_Freigegeben" />
   <bpmn:message id="Message_18p400m" name="Msg_Auftragstatus_Abgelehnt" />
@@ -80,93 +80,85 @@
         <di:waypoint x="142" y="313" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="UserTask_0ihwqry_di" bpmnElement="HT_Auftrag_freigeben">
-        <dc:Bounds x="302" y="273" width="100" height="80" />
+        <dc:Bounds x="228" y="273" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1sgjlrg_di" bpmnElement="SequenceFlow_1sgjlrg">
-        <di:waypoint x="402" y="313" />
-        <di:waypoint x="444" y="313" />
+        <di:waypoint x="328" y="313" />
+        <di:waypoint x="370" y="313" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ExclusiveGateway_0sp0b13_di" bpmnElement="ExclusiveGateway_0sp0b13" isMarkerVisible="true">
-        <dc:Bounds x="216" y="288" width="50" height="50" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BusinessRuleTask_0wescje_di" bpmnElement="RT_Freigeber_ermitteln">
-        <dc:Bounds x="554" y="273" width="100" height="80" />
+        <dc:Bounds x="516" y="273" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_1uw23j8_di" bpmnElement="XOR_Freigabe_erfolgt" isMarkerVisible="true">
-        <dc:Bounds x="444" y="288" width="50" height="50" />
+        <dc:Bounds x="370" y="288" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="427" y="347" width="84" height="14" />
+          <dc:Bounds x="353" y="347" width="84" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1lxfun2_di" bpmnElement="SequenceFlow_1lxfun2">
-        <di:waypoint x="494" y="313" />
-        <di:waypoint x="554" y="313" />
+        <di:waypoint x="420" y="313" />
+        <di:waypoint x="516" y="313" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="497" y="294" width="12" height="14" />
+          <dc:Bounds x="428" y="294" width="12" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_02tgv2n_di" bpmnElement="SequenceFlow_02tgv2n">
-        <di:waypoint x="596" y="414" />
-        <di:waypoint x="241" y="414" />
-        <di:waypoint x="241" y="338" />
+        <di:waypoint x="651" y="414" />
+        <di:waypoint x="616" y="414" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0dtmtn9_di" bpmnElement="SequenceFlow_0dtmtn9">
-        <di:waypoint x="469" y="288" />
-        <di:waypoint x="469" y="208" />
-        <di:waypoint x="829" y="208" />
+        <di:waypoint x="395" y="288" />
+        <di:waypoint x="395" y="208" />
+        <di:waypoint x="835" y="208" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="439" y="266" width="22" height="14" />
+          <dc:Bounds x="365" y="266" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0ehu7d0_di" bpmnElement="SequenceFlow_0ehu7d0">
-        <di:waypoint x="654" y="313" />
-        <di:waypoint x="698" y="313" />
+        <di:waypoint x="616" y="313" />
+        <di:waypoint x="704" y="313" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_1036e38_di" bpmnElement="XOR_Weiterer_Freigeber_erforderlich" isMarkerVisible="true">
-        <dc:Bounds x="698" y="288" width="50" height="50" />
+        <dc:Bounds x="704" y="288" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="692" y="235" width="62" height="40" />
+          <dc:Bounds x="698" y="235" width="62" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1o37ycj_di" bpmnElement="SequenceFlow_1o37ycj">
-        <di:waypoint x="748" y="313" />
-        <di:waypoint x="829" y="313" />
+        <di:waypoint x="754" y="313" />
+        <di:waypoint x="835" y="313" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="746" y="291" width="22" height="14" />
+          <dc:Bounds x="752" y="291" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1jml5je_di" bpmnElement="SequenceFlow_1jml5je">
-        <di:waypoint x="723" y="338" />
-        <di:waypoint x="723" y="414" />
-        <di:waypoint x="632" y="414" />
+        <di:waypoint x="729" y="338" />
+        <di:waypoint x="729" y="414" />
+        <di:waypoint x="687" y="414" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="685" y="373" width="12" height="14" />
+          <dc:Bounds x="771" y="373" width="12" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0orodzx_di" bpmnElement="SequenceFlow_0orodzx">
         <di:waypoint x="178" y="313" />
-        <di:waypoint x="216" y="313" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1hvz1wp_di" bpmnElement="SequenceFlow_1hvz1wp">
-        <di:waypoint x="266" y="313" />
-        <di:waypoint x="302" y="313" />
+        <di:waypoint x="228" y="313" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0f5ud1k_di" bpmnElement="EE_Auftrag_abgelehnt">
-        <dc:Bounds x="829" y="190" width="36" height="36" />
+        <dc:Bounds x="835" y="190" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="823" y="233" width="50" height="27" />
+          <dc:Bounds x="829" y="233" width="50" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1k1jzf0_di" bpmnElement="EE_Auftrag_freigegeben">
-        <dc:Bounds x="829" y="295" width="36" height="36" />
+        <dc:Bounds x="835" y="295" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="816" y="338" width="63" height="14" />
+          <dc:Bounds x="822" y="338" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IntermediateThrowEvent_02n7zaw_di" bpmnElement="IE_Auftrag_in_weiterer_Freigabe">
-        <dc:Bounds x="596" y="396" width="36" height="36" />
+        <dc:Bounds x="651" y="396" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="586" y="439" width="58" height="27" />
+          <dc:Bounds x="641" y="439" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IntermediateThrowEvent_07p596b_di" bpmnElement="IE_Auftrag_in_Freigabe">
@@ -175,6 +167,14 @@
           <dc:Bounds x="124" y="338" width="73" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0xylj76_di" bpmnElement="UserTask_0xylj76">
+        <dc:Bounds x="516" y="374" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_07kw475_di" bpmnElement="SequenceFlow_07kw475">
+        <di:waypoint x="516" y="414" />
+        <di:waypoint x="395" y="414" />
+        <di:waypoint x="395" y="338" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

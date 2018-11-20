@@ -29,7 +29,7 @@ import de.fiduciagad.okvp.zahlungsverkehr.auftrag.prozess.ProzessVariablen;
 import de.fiduciagad.okvp.zahlungsverkehr.auftrag.util.AuftragFreigabeComparator;
 
 @RestController
-public class ZahlungsauftraegeController {
+public class ZahlungsauftraegeController implements ZahlungsauftraegeAPI {
 	@Autowired
 	private ZahlungsauftragRepository repository;
 	
@@ -42,6 +42,10 @@ public class ZahlungsauftraegeController {
     @Autowired
     private TaskService taskService;
 		
+	/* (non-Javadoc)
+	 * @see de.fiduciagad.okvp.zahlungsverkehr.auftrag.ZahlungsauftraegeControllerAPI#getAuftraegeOffen(java.lang.String)
+	 */
+	@Override
 	@RequestMapping("/zahlungsauftraege/offen")
      public ResponseEntity<List<Zahlungsauftrag>> getAuftraegeOffen(@RequestParam String userid) {
 	     List<Zahlungsauftrag> auftraege = repository.findAll();
@@ -74,7 +78,11 @@ public class ZahlungsauftraegeController {
 	     return ResponseEntity.ok(offeneAuftraege);
 	 }
 
-	 @RequestMapping("/zahlungsauftraege/eingereicht")
+	 /* (non-Javadoc)
+	 * @see de.fiduciagad.okvp.zahlungsverkehr.auftrag.ZahlungsauftraegeControllerAPI#getAuftraegeEingereicht(java.lang.String)
+	 */
+	@Override
+	@RequestMapping("/zahlungsauftraege/eingereicht")
      public ResponseEntity<List<Zahlungsauftrag>> getAuftraegeEingereicht(@RequestParam String userid) {
 
          List<Task> tasklist = taskService.createTaskQuery().processDefinitionKey(ProzessKonstanten.KEY_PROZESS_AUFTRAGSFREIGABE).list();
@@ -103,6 +111,10 @@ public class ZahlungsauftraegeController {
 	     return ResponseEntity.ok(auftragsliste);		 
 	 }
 	 
+	/* (non-Javadoc)
+	 * @see de.fiduciagad.okvp.zahlungsverkehr.auftrag.ZahlungsauftraegeControllerAPI#getAuftragById(java.lang.Long)
+	 */
+	@Override
 	@RequestMapping(value="/zahlungsauftraege/{id}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Zahlungsauftrag> getAuftragById(@PathVariable Long id) {
 		
@@ -117,7 +129,11 @@ public class ZahlungsauftraegeController {
 			
 	}
 	
-	 @RequestMapping("/zahlungsauftraege/{id}/freigabeschritt")
+	 /* (non-Javadoc)
+	 * @see de.fiduciagad.okvp.zahlungsverkehr.auftrag.ZahlungsauftraegeControllerAPI#getAuftragsfreigabeNaechsterSchritt(java.lang.Long, java.lang.String)
+	 */
+	@Override
+	@RequestMapping("/zahlungsauftraege/{id}/freigabeschritt")
 	 public ResponseEntity<ZahlungsauftragFreigabeschritt> getAuftragsfreigabeNaechsterSchritt (@PathVariable Long id, @RequestParam String userid) {
 		 Optional<Zahlungsauftrag> auftrag = repository.findById(id);
 		 if (!auftrag.isPresent())
@@ -141,7 +157,11 @@ public class ZahlungsauftraegeController {
 		 return ResponseEntity.ok(schritt);
 	 }
 	 
-	 @RequestMapping("/zahlungsauftraege/{id}/freigabeschritt/{schrittid}/freigeben")
+	 /* (non-Javadoc)
+	 * @see de.fiduciagad.okvp.zahlungsverkehr.auftrag.ZahlungsauftraegeControllerAPI#auftragFreigeben(java.lang.Long, java.lang.String, java.lang.String)
+	 */
+	@Override
+	@RequestMapping("/zahlungsauftraege/{id}/freigabeschritt/{schrittid}/freigeben")
      public ResponseEntity<ZahlungsauftragFreigabeschritt> auftragFreigeben(@PathVariable Long id, @PathVariable String schrittid, @RequestParam String userid) {
 		Task task = taskService.createTaskQuery().taskId(schrittid).initializeFormKeys().singleResult();
 		if (task == null || !userid.equals(task.getAssignee())) {
@@ -171,7 +191,11 @@ public class ZahlungsauftraegeController {
 		return ResponseEntity.ok(schritt);
 	}
 	
-	 @RequestMapping("/zahlungsauftraege/{id}/freigabeschritt/{schrittid}/ablehnen")
+	 /* (non-Javadoc)
+	 * @see de.fiduciagad.okvp.zahlungsverkehr.auftrag.ZahlungsauftraegeControllerAPI#auftragAblehnen(java.lang.Long, java.lang.String, java.lang.String)
+	 */
+	@Override
+	@RequestMapping("/zahlungsauftraege/{id}/freigabeschritt/{schrittid}/ablehnen")
      public ResponseEntity<Long> auftragAblehnen(@PathVariable Long id, @PathVariable String schrittid, @RequestParam String userid) {
 		Task task = taskService.createTaskQuery().taskId(schrittid).singleResult();
 		if (task == null || !userid.equals(task.getAssignee())) {

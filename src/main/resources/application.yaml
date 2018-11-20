@@ -39,8 +39,8 @@
     database:
       schema-update: true
     admin-user:
-      id: kermit
-      password: superSecret
+      id: a
+      password: a
       firstName: Kermit
     filter:
       create: All tasks

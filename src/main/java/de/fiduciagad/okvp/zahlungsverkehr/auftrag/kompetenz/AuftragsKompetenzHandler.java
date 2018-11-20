@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuftragsKompetenzHandler {
-	public static final double GRENZE_EINZELKOMPETENZ = 1500.00;
+	public static final double GRENZE_EINZELKOMPETENZ = 10000.00;
 	
 	private HashMap<String, Auftragskompetenz> userKompetenzen = new HashMap<>();
 	private HashMap<EnumAuftragskompetenztyp, ArrayList <String>> kompetenzarten = new HashMap<>();
@@ -18,18 +18,18 @@ public class AuftragsKompetenzHandler {
 		ArrayList<String> kompetenzartEK = new ArrayList<>();
 		ArrayList<String> kompetenzartGK = new ArrayList<>();
 		ArrayList<String> kompetenzartV = new ArrayList<>();
-		userKompetenzen.put("ycm4444", new Auftragskompetenz (EnumAuftragskompetenztyp.GEMEINSCHAFTSKOMPETENZ));
-		userKompetenzen.put("ycm5555", new Auftragskompetenz (EnumAuftragskompetenztyp.GEMEINSCHAFTSKOMPETENZ));
-		kompetenzartGK.add("ycm4444");
-		kompetenzartGK.add("ycm5555");
+		userKompetenzen.put("gk4444", new Auftragskompetenz (EnumAuftragskompetenztyp.GEMEINSCHAFTSKOMPETENZ));
+		userKompetenzen.put("gk5555", new Auftragskompetenz (EnumAuftragskompetenztyp.GEMEINSCHAFTSKOMPETENZ));
+		kompetenzartGK.add("gk4444");
+		kompetenzartGK.add("gk5555");
 		kompetenzarten.put (EnumAuftragskompetenztyp.GEMEINSCHAFTSKOMPETENZ, kompetenzartGK);
-		userKompetenzen.put("ycm6666", new Auftragskompetenz (EnumAuftragskompetenztyp.EINZELKOMPETENZ));
-		userKompetenzen.put("ycm7777", new Auftragskompetenz (EnumAuftragskompetenztyp.EINZELKOMPETENZ));
-		kompetenzartEK.add("ycm6666");
-		kompetenzartEK.add("ycm7777");
+		userKompetenzen.put("ek6666", new Auftragskompetenz (EnumAuftragskompetenztyp.EINZELKOMPETENZ));
+		userKompetenzen.put("ek7777", new Auftragskompetenz (EnumAuftragskompetenztyp.EINZELKOMPETENZ));
+		kompetenzartEK.add("ek6666");
+		kompetenzartEK.add("ek7777");
 		kompetenzarten.put(EnumAuftragskompetenztyp.EINZELKOMPETENZ, kompetenzartEK);
-		userKompetenzen.put("ycm9999", new Auftragskompetenz (EnumAuftragskompetenztyp.VORSTAND));
-		kompetenzartV.add("ycm9999");
+		userKompetenzen.put("vorstand", new Auftragskompetenz (EnumAuftragskompetenztyp.VORSTAND));
+		kompetenzartV.add("vorstand");
 		kompetenzarten.put(EnumAuftragskompetenztyp.VORSTAND, kompetenzartV);
 	}
  
@@ -39,9 +39,9 @@ public class AuftragsKompetenzHandler {
 			return null;
 
 		if (userKompetenz.getKompetenzklasse() == EnumAuftragskompetenztyp.EINZELKOMPETENZ) {
-			if (betrag != null && betrag.doubleValue() < GRENZE_EINZELKOMPETENZ)
-				return null;
-			return kompetenzarten.get(EnumAuftragskompetenztyp.VORSTAND).get(0);
+//			if (betrag != null && betrag.doubleValue() > GRENZE_EINZELKOMPETENZ)
+//			  return kompetenzarten.get(EnumAuftragskompetenztyp.VORSTAND).get(0);
+				return null;			
 		}
 		if (userKompetenz.getKompetenzklasse() == EnumAuftragskompetenztyp.GEMEINSCHAFTSKOMPETENZ) {
 			for (String user: listVorhandeneFreigaben)
